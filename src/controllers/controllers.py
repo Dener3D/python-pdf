@@ -15,9 +15,9 @@ class Controller:
             pdf_merger.append(pdf_file)
             
         uid = str(uuid.uuid1())
-        path = uid + '.pdf'
+        path = './' + uid + '.pdf'
         
         with open(path, 'wb') as output_file:
             pdf_merger.write(output_file)
         
-        return {"path": url + "/" + path}
+        return {"path": path}
