@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_file
 from src.controllers.controllers import Controller
 import os
 
@@ -17,6 +17,24 @@ def join_pdf():
     response = controller.join_pdf(bytes_pdf)
     
     return {"res": response}
+
+@app.route('/download_pdf', methods=['GET'])
+def download_pdf():
+    try:
+        filename = request.args.get('filename')
+        # Caminho para o arquivo PDF salvo localmente
+        filepath = os.path.join(app.root_path, filename)
+        print(filepath)
+        # Verifica se o arquivo existe
+        if os.path.exists(filepath):
+            # Envia o arquivo como resposta à solicitação GET
+            return send_file(filepath, as_attachment=True)
+        else:
+            return {'status': 'error', 'message': 'Arquivo não encontrado'}
+
+    except Exception as e:
+        print("HSAHDASHDAS")
+        return {'status': 'error', 'message': str(e)}
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
