@@ -3,6 +3,7 @@ import io
 from io import BytesIO
 import PyPDF2
 import uuid
+import os
 
 url = 'https://pacific-earth-60757-12860c7b633c.herokuapp.com/'
 
@@ -16,7 +17,6 @@ class Controller:
             
         uid = str(uuid.uuid1())
         path = 'merged_files/' + uid + '.pdf'
-        
         with open(path, 'wb') as output_file:
             pdf_merger.write(output_file)
         
