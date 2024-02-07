@@ -2,10 +2,11 @@ from flask import Flask, request, jsonify
 from barcode import Code128
 from barcode.writer import ImageWriter
 from src.controllers.controllers import Controller
+import os
 
 app = Flask(__name__)
 
-@app.route('/join_pdf', methods={'POST'})
+@app.route('/join_pdf', methods=['POST'])
 def join_pdf():
     controller = Controller()
     files = request.files.getlist('pdfs')
@@ -20,4 +21,5 @@ def join_pdf():
     return {"res": response}
 
 if __name__ == "__main__":
-    app.run(host=' https://pacific-earth-60757-12860c7b633c.herokuapp.com/', port=3000, debug=False)
+    port = int(os.environ.get("PORT", 3000))
+    app.run(host='0.0.0.0', port=port)
