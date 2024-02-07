@@ -8,7 +8,6 @@ app = Flask(__name__)
 def join_pdf():
     controller = Controller()
     files = request.files.getlist('pdfs')
-    print(files)
      
     bytes_pdf = []
     for pdf in files:
@@ -24,7 +23,6 @@ def download_pdf():
         filename = request.args.get('filename')
         # Caminho para o arquivo PDF salvo localmente
         filepath = os.path.join(app.root_path, filename)
-        print(filepath)
         # Verifica se o arquivo existe
         if os.path.exists(filepath):
             # Envia o arquivo como resposta à solicitação GET
@@ -33,7 +31,6 @@ def download_pdf():
             return {'status': 'error', 'message': 'Arquivo não encontrado'}
 
     except Exception as e:
-        print("HSAHDASHDAS")
         return {'status': 'error', 'message': str(e)}
 
 if __name__ == "__main__":
