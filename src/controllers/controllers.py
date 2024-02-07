@@ -16,7 +16,7 @@ class Controller:
             pdf_merger.append(pdf_file)
             
         uid = str(uuid.uuid1())
-        path = os.path.join('http://172.18.133.166:14781/', uid + '.pdf')
+        path = uid + ".pdf"
         
         with open(path, 'wb') as output_file:
             pdf_merger.write(output_file)
