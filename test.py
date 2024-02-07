@@ -20,4 +20,4 @@ def join_pdf():
     return {"res": response}
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=3000, debug=True)
+    app.run(host=' https://pacific-earth-60757-12860c7b633c.herokuapp.com/', port=3000, debug=False)
