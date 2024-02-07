@@ -1,6 +1,4 @@
 from flask import Flask, request, jsonify
-from barcode import Code128
-from barcode.writer import ImageWriter
 from src.controllers.controllers import Controller
 import os
 
@@ -21,5 +19,5 @@ def join_pdf():
     return {"res": response}
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 3000))
-    app.run(host='0.0.0.0', port=port)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=3000, debug=True)
