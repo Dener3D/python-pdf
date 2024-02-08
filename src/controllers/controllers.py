@@ -73,6 +73,15 @@ class Controller:
             output_directory = root_path  # Pode ser ajustado conforme necessário
             
             uid = str(uuid.uuid1())
+            
+            now = datetime.now().date()
+            
+            try:
+                os.mkdir("files/" + str(now))
+            except FileExistsError:
+                pass
+            except Exception as e:
+                print(f'Ocorreu um erro ao criar a pasta: {e}')
 
             # Itera sobre cada página do PDF e salva como um novo arquivo
             for page_number in range(len(pdf_reader.pages)):
@@ -81,7 +90,7 @@ class Controller:
                 pdf_writer.add_page(pdf_reader.pages[page_number])
 
                 # Salva o PDF dividido localmente
-                output_filepath = os.path.join(output_directory, f'{uid}_page_{page_number + 1}.pdf')
+                output_filepath = os.path.join(output_directory, f'files/{str(now)}/{uid}_page_{page_number + 1}.pdf')
                 output_files.append(f'{uid}_page_{page_number + 1}.pdf')
                 with open(output_filepath, 'wb') as output_file:
                     pdf_writer.write(output_file)

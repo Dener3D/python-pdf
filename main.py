@@ -6,6 +6,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from flask_basicauth import BasicAuth
 from werkzeug.exceptions import HTTPException, Unauthorized
 import werkzeug
+from datetime import datetime
 
 app = Flask(__name__)
 
@@ -63,8 +64,9 @@ def split_pdf():
 def download_pdf():
     check_credentials()
     filename = request.args.get('filename')
+    now = datetime.now().date()
     # Caminho para o arquivo PDF salvo localmente
-    filepath = os.path.join(app.root_path, filename)
+    filepath = os.path.join(app.root_path, 'files/'+ str(now) + "/" + filename)
     # Verifica se o arquivo existe
     if os.path.exists(filepath):
         #with open(filepath, 'rb') as file:
