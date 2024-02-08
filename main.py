@@ -9,8 +9,8 @@ import werkzeug
 
 app = Flask(__name__)
 
-app.config['BASIC_AUTH_USERNAME'] = "dener"
-app.config['BASIC_AUTH_PASSWORD'] = "123456"
+app.config['BASIC_AUTH_USERNAME'] = os.environ.get('USERNAME')
+app.config['BASIC_AUTH_PASSWORD'] = os.environ.get('PASSWORD')
 
 basic_auth = BasicAuth(app)
 
@@ -97,4 +97,4 @@ def download_pdf():
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
-    app.run(host='0.0.0.0', port=3000, debug=True)
+    app.run(host='0.0.0.0', port=port)
