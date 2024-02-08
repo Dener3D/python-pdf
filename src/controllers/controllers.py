@@ -6,8 +6,34 @@ import uuid
 import os
 from PyPDF2 import PdfReader, PdfWriter
 from flask import jsonify
+from datetime import datetime
+import re
 
 class Controller:
+    # Deletar os pdfs na origem do projeto
+    def delete_pdfs(self, root_path) -> Dict:
+        try:
+            now = datetime.now().date()
+            # Diretório raiz do projeto
+            root_directory = root_path + "/files/" + str(now)
+
+            # Obtém a lista de arquivos na raiz do projeto
+            files_in_root = os.listdir(root_directory)
+
+            # Filtra apenas os arquivos PDF
+            pdf_files = [file for file in files_in_root if file.endswith('.pdf')]
+            
+            # Exclui cada arquivo PDF encontrado
+            for pdf_file in pdf_files:
+                pdf_filepath = os.path.join(root_directory, pdf_file)
+                os.remove(pdf_filepath)
+        
+
+            return {'status': 'success', 'message': 'Arquivos PDF excluídos com sucesso'}
+
+        except Exception as e:
+            return {'status': 'error', 'message': str(e)}
+        
     def join_pdf(self, pdf_bytes) -> Dict:
         pdf_merger = PyPDF2.PdfMerger()
         
@@ -15,11 +41,23 @@ class Controller:
             pdf_file = PyPDF2.PdfReader(io.BytesIO(pdf))
             pdf_merger.append(pdf_file)
             
+        now = datetime.now().date()
+        
+        # Cria uma nova pasta
+        try:
+            os.mkdir("files/" + str(now))
+        except FileExistsError:
+            pass
+        except Exception as e:
+            print(f'Ocorreu um erro ao criar a pasta: {e}')
+        
+        
         uid = str(uuid.uuid1())
-        path = uid + '.pdf'
+        path = "files/" + str(now) + "/" + uid +'.pdf'
+        
         with open(path, 'wb') as output_file:
             pdf_merger.write(output_file)
-        
+            
         return {"path": path}
     
     def split_pdf(self, pdf, root_path) -> Dict:

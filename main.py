@@ -9,39 +9,18 @@ import werkzeug
 
 app = Flask(__name__)
 
-app.config['BASIC_AUTH_USERNAME'] = os.environ.get('USERNAME')
-app.config['BASIC_AUTH_PASSWORD'] = os.environ.get('PASSWORD')
+app.config['BASIC_AUTH_USERNAME'] = os.environ.get("USERNAME")
+app.config['BASIC_AUTH_PASSWORD'] = os.environ.get("PASSWORD")
 
 basic_auth = BasicAuth(app)
 
-def delete_pdfs():
-    try:
-        # Diretório raiz do projeto
-        root_directory = app.root_path
-
-        # Obtém a lista de arquivos na raiz do projeto
-        files_in_root = os.listdir(root_directory)
-
-        # Filtra apenas os arquivos PDF
-        pdf_files = [file for file in files_in_root if file.endswith('.pdf')]
-
-        # Exclui cada arquivo PDF encontrado
-        for pdf_file in pdf_files:
-            pdf_filepath = os.path.join(root_directory, pdf_file)
-            os.remove(pdf_filepath)
-
-        return {'status': 'success', 'message': 'Arquivos PDF excluídos com sucesso'}
-
-    except Exception as e:
-        return {'status': 'error', 'message': str(e)}
-    
 def delete_pdfs_job():
     with app.app_context():
-        delete_pdfs()
+        controller.delete_pdfs(app.root_path)
 
 scheduler = BackgroundScheduler()
 
-scheduler.add_job(func=delete_pdfs_job, trigger='interval', minutes=60)
+scheduler.add_job(func=delete_pdfs_job, trigger='cron', hour=00, minute=00)
 scheduler.start()
 
 controller = Controller()
@@ -97,4 +76,4 @@ def download_pdf():
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
-    app.run(host='0.0.0.0', port=port)
+    app.run(host='0.0.0.0', port=post)
