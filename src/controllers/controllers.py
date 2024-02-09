@@ -5,11 +5,24 @@ import PyPDF2
 import uuid
 import os
 from PyPDF2 import PdfReader, PdfWriter
-from flask import jsonify
+from flask import jsonify, request, send_file
 from datetime import datetime
 import re
 
 class Controller:
+    def download_pdf(self, root_path):
+        filename = request.args.get('filename')
+        now = datetime.now().date()
+        # Caminho para o arquivo PDF salvo localmente
+        filepath = os.path.join(root_path, 'files/'+ str(now) + "/" + filename)
+        # Verifica se o arquivo existe
+        if os.path.exists(filepath):
+            #with open(filepath, 'rb') as file:
+            response = send_file(filepath, as_attachment=True, mimetype='application/pdf', download_name='merged_file.pdf')
+            # Remove o arquivo após o download
+            return response
+        else:
+            return {'status': 'error', 'message': 'File not found'}
     # Deletar os pdfs na origem do projeto
     def delete_pdfs(self, root_path) -> Dict:
         try:
@@ -29,7 +42,7 @@ class Controller:
                 os.remove(pdf_filepath)
         
 
-            return {'status': 'success', 'message': 'Arquivos PDF excluídos com sucesso'}
+            return {'status': 'success', 'message': 'Files successfully deleted'}
 
         except Exception as e:
             return {'status': 'error', 'message': str(e)}
@@ -49,7 +62,7 @@ class Controller:
         except FileExistsError:
             pass
         except Exception as e:
-            print(f'Ocorreu um erro ao criar a pasta: {e}')
+            print(f'There was an error trying to create the folder: {e}')
         
         
         uid = str(uuid.uuid1())
@@ -82,7 +95,7 @@ class Controller:
             except FileExistsError:
                 pass
             except Exception as e:
-                print(f'Ocorreu um erro ao criar a pasta: {e}')
+                print(f'There was an error trying to create the folder: {e}')
 
             # Itera sobre cada página do PDF e salva como um novo arquivo
             for page_number in range(len(pdf_reader.pages)):
@@ -96,7 +109,17 @@ class Controller:
                 with open(output_filepath, 'wb') as output_file:
                     pdf_writer.write(output_file)
 
-            return jsonify({'status': 'success', 'message': 'PDF dividido e salvo com sucesso', "files": output_files})
+            return jsonify({'status': 'success', 'message': 'PDF successfully splited', "files": output_files})
 
         except Exception as e:
             return jsonify({'status': 'error', 'message': str(e)})
+
+    def extract_text_from_pdf(self, pdf) -> Dict:
+        pdf_bytes = pdf.read()
+        reader = PyPDF2.PdfReader(io.BytesIO(pdf_bytes))
+        text = ""
+        for page in reader.pages:
+            text += page.extract_text() + ",\n"
+            
+        return {'status': 'success', 'extracted_text': text.replace('\n', ' ')}
+                

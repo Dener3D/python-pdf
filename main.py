@@ -15,13 +15,14 @@ app.config['BASIC_AUTH_PASSWORD'] = os.environ.get("PASSWORD")
 
 basic_auth = BasicAuth(app)
 
+# Job que roda para deletar os pdfs do dia
 def delete_pdfs_job():
     with app.app_context():
         controller.delete_pdfs(app.root_path)
 
 scheduler = BackgroundScheduler()
 
-scheduler.add_job(func=delete_pdfs_job, trigger='cron', hour=00, minute=00)
+scheduler.add_job(func=delete_pdfs_job, trigger='cron', hour=23, minute=59)
 scheduler.start()
 
 controller = Controller()
@@ -63,18 +64,17 @@ def split_pdf():
 @app.route('/download_pdf', methods=['GET'])
 def download_pdf():
     check_credentials()
-    filename = request.args.get('filename')
-    now = datetime.now().date()
-    # Caminho para o arquivo PDF salvo localmente
-    filepath = os.path.join(app.root_path, 'files/'+ str(now) + "/" + filename)
-    # Verifica se o arquivo existe
-    if os.path.exists(filepath):
-        #with open(filepath, 'rb') as file:
-        response = send_file(filepath, as_attachment=True, mimetype='application/pdf', download_name='merged_file.pdf')
-        # Remove o arquivo após o download
-        return response
-    else:
-        return {'status': 'error', 'message': 'Arquivo não encontrado'}
+    return controller.download_pdf(app.root_path)
+
+@app.route('/extract_text', methods=['POST'])
+def extract_text():
+    check_credentials()
+    try:
+        check_credentials()
+        pdf = request.files.get('pdf')
+        return controller.extract_text_from_pdf(pdf)
+    except Exception as e:
+        return {'status': 'error', 'message': e}
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
